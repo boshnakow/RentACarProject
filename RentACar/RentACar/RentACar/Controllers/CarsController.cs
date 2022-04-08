@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RentACar.Data;
 using RentACar.Models;
 
@@ -139,6 +140,21 @@ namespace RentACar.Controllers
             }
 
             return View(car);
+        }
+
+        public async Task<IActionResult> Order(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            Car car = await _context.Cars.FirstOrDefaultAsync(m => m.Id == id);
+            if (car == null)
+            {
+                return NotFound();
+            }
+            TempData["car"] = JsonConvert.SerializeObject(car);
+            return RedirectToAction("Create", "Orders");
         }
 
         // POST: Cars/Delete/5

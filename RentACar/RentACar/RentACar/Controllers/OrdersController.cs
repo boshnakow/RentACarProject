@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RentACar.Data;
 using RentACar.Models;
 
@@ -15,10 +17,12 @@ namespace RentACar.Controllers
     public class OrdersController : Controller
     {
         private readonly RentACarContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public OrdersController(RentACarContext context)
+        public OrdersController(RentACarContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Orders
@@ -47,10 +51,15 @@ namespace RentACar.Controllers
         }
 
         // GET: Orders/Create
-        [Authorize(Roles = "Admin")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            Car car = JsonConvert.DeserializeObject<Car>(TempData["car"].ToString());
+            User user = await _userManager.GetUserAsync(User);
+            Order order = new Order();
+            order.Car = car;
+            order.User = user;
+            order.StartDate = DateTime.Now;
+            return View(order);
         }
 
         // POST: Orders/Create
@@ -58,7 +67,6 @@ namespace RentACar.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(Order order)
         {
             if (ModelState.IsValid)
@@ -69,6 +77,8 @@ namespace RentACar.Controllers
             }
             return View(order);
         }
+
+        
 
         // GET: Orders/Edit/5
         [Authorize(Roles = "Admin")]
