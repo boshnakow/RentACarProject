@@ -26,7 +26,7 @@ namespace RentACar.Controllers
         }
 
         // GET: Orders
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Orders.ToListAsync());
@@ -51,6 +51,7 @@ namespace RentACar.Controllers
         }
 
         // GET: Orders/Create
+        [Authorize]
         public async Task<IActionResult> Create()
         {
             Car car = JsonConvert.DeserializeObject<Car>(TempData["car"].ToString());
@@ -67,6 +68,7 @@ namespace RentACar.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create(Order order)
         {
             if (ModelState.IsValid)
