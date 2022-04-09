@@ -7,13 +7,17 @@
 * [Setup](#setup)
 
 ## General info
-This project is simple Lorem ipsum dolor generator.
+This project is a web-based system. The project is developed to be used by small, medium or large businesses in the field of car rental .
 	
 ## Technologies
 Project is created with:
-* Lorem version: 12.3
-* Ipsum version: 2.33
-* Ament library version: 999
+* ASP.NET Core MVC  version: 6.0
+* Entity Framework version: latest
+* Visual Studio  version: 2022
+* Microsoft SQL Server Management Studio
+* Google Cloud Services( For SQL Server Hosting)
+* NuGet Package Manager
+* Command Prompt and PowerShell
 	
 ## Setup
 To run this project, install it locally using npm:
