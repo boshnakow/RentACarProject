@@ -1,9 +1,11 @@
 ﻿#nullable disable
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,16 +18,21 @@ namespace RentACar.Controllers
     public class CarsController : Controller
     {
         private readonly RentACarContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public CarsController(RentACarContext context)
+        public CarsController(RentACarContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Cars
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Cars.ToListAsync());
+            dynamic myModel = new ExpandoObject();
+            myModel.Cars = await _context.Cars.ToListAsync();
+            myModel.StartDate = DateTime.Now;
+            return View(myModel);
         }
 
         // GET: Cars/Details/5
@@ -59,6 +66,7 @@ namespace RentACar.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("Id,Brand,Model,Year,Seats,Description,Price")] Car car)
         {
             if (ModelState.IsValid)
@@ -141,7 +149,8 @@ namespace RentACar.Controllers
 
             return View(car);
         }
-
+        [HttpGet, ActionName("Order")]
+        [Authorize]
         public async Task<IActionResult> Order(int? id)
         {
             if (id == null)
@@ -153,8 +162,15 @@ namespace RentACar.Controllers
             {
                 return NotFound();
             }
-            TempData["car"] = JsonConvert.SerializeObject(car);
-            return RedirectToAction("Create", "Orders");
+
+            Order order = new Order();
+            order.CarId = (int)id;
+            order.StartDate = DateTime.Now;
+            order.UserId = await _userManager.GetUserIdAsync(await _userManager.GetUserAsync(HttpContext.User));
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Edit", "Orders", order);
         }
 
         // POST: Cars/Delete/5

@@ -16,9 +16,9 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Car" class="control-label"></label>
-                <input asp-for="Car.FullName" class="form-control" disabled/>
-                <span asp-validation-for="Car.FullName" class="text-danger"></span>
+                <label asp-for="CarId" class="control-label">Car</label>
+                <input asp-for="CarId" class="form-control" value="@Model.CarId"disabled/>
+                <span asp-validation-for="CarId" class="text-danger"></span>
             </div>
             <div>
                 <a asp-controller="Cars" asp-action="Index">Choose a Car</a>
