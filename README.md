@@ -1,6 +1,6 @@
-#Rent a car project
+# Rent a car project
 
-###Developed by Emo&Ivo
+### Developed by Emo&Ivo
 ## Table of contents
 * [General info](#general-info)
 * [Technologies](#technologies)
