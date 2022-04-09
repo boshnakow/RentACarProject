@@ -26,7 +26,7 @@ namespace RentACar.Controllers
         }
 
         // GET: Orders
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles="Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Orders.ToListAsync());
@@ -52,16 +52,11 @@ namespace RentACar.Controllers
 
         // GET: Orders/Create
         [Authorize]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            Car car = JsonConvert.DeserializeObject<Car>(TempData["car"].ToString());
-            User user = await _userManager.GetUserAsync(User);
-            Order order = new Order();
-            order.Car = car;
-            order.User = user;
-            order.StartDate = DateTime.Now;
-            return View(order);
+            return View();
         }
+        
 
         // POST: Orders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -83,7 +78,6 @@ namespace RentACar.Controllers
         
 
         // GET: Orders/Edit/5
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -104,14 +98,14 @@ namespace RentACar.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, Order order)
         {
             if (id != order.Id)
             {
                 return NotFound();
             }
-
+            var carId = order.CarId;
+            var userId = order.UserId;
             if (ModelState.IsValid)
             {
                 try
